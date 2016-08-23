@@ -250,7 +250,7 @@ BOOL MCUPVideoInputDevice::GetFrameDataNoDelay(BYTE *destFrame, PINDEX * bytesRe
 {
   grabCount++;
 
-  CLogger::getLogger()->Log("ID %u co QOS la %u",frameWidth,frameHeight);
+  //CLogger::getLogger()->Log("ID %u co QOS la %u",frameWidth,frameHeight);
   if (!mcuConnection.OnOutgoingVideo(destFrame, frameWidth, frameHeight, *bytesReturned))
     return FALSE;
 
@@ -627,7 +627,10 @@ MCUSubtitles * MCURenderSubtitles(VideoMixPosition & vmp, unsigned fw, unsigned 
   MCUSubtitles * st = new MCUSubtitles;
   st->w = 0;
   st->b = NULL;
-  st->text = vmp.GetEndpointName();
+  // LDLac code
+  PString tmp = vmp.n;
+  tmp+=  ".  " +vmp.GetEndpointName();
+  st->text = tmp;
 
   VMPCfgSplitOptions & split = OpenMCU::vmcfg.vmconf[layout].splitcfg;
   VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[layout].vmpcfg[vmp.n];

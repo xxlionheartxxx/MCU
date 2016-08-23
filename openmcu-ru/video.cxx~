@@ -44,6 +44,8 @@ MCUPVideoInputDevice::MCUPVideoInputDevice(MCUH323Connection & _mcuConnection)
   SetColourFormat("YUV420P");
   channelNumber = 0;
   grabCount = 0;
+  WidthMax = 0;
+  HeightMax = 0;
   SetFrameRate(25);
 }
 
@@ -152,6 +154,8 @@ BOOL MCUPVideoInputDevice::GetFrameSizeLimits(unsigned & minWidth,
 
 BOOL MCUPVideoInputDevice::SetFrameSize(unsigned width, unsigned height)
 {
+  if(WidthMax < width && WidthMax != 0) { width = WidthMax;}
+  if(HeightMax < height && HeightMax != 0) {height = HeightMax;}
   PTRACE(4,"SetFrameSize " << width << " " << height);
   if (!PVideoDevice::SetFrameSize(width, height))
     return FALSE;
@@ -185,7 +189,9 @@ BOOL MCUPVideoInputDevice::GetFrameData(BYTE * buffer, PINDEX * bytesReturned)
       CLogger::getLogger()->Log("ID %d co QOS la %d",member->GetID(), member_now->get_Qos());
     }
   *///
+  if(HeightMax == 0 && WidthMax == 0) {GetFrameSize(WidthMax, HeightMax);}
   int code_relay = member_now->get_Qos();
+
 
   if(code_relay != -1){
     ///
@@ -244,6 +250,7 @@ BOOL MCUPVideoInputDevice::GetFrameDataNoDelay(BYTE *destFrame, PINDEX * bytesRe
 {
   grabCount++;
 
+  //CLogger::getLogger()->Log("ID %u co QOS la %u",frameWidth,frameHeight);
   if (!mcuConnection.OnOutgoingVideo(destFrame, frameWidth, frameHeight, *bytesReturned))
     return FALSE;
 
@@ -369,7 +376,7 @@ BOOL MCUPVideoOutputDevice::SetFrameData(unsigned x, unsigned y,
       if (code_of_R != pre_code_of_R) {
         //CLogger::getLogger()->Log("member id %d co QOS %d",member->GetID(), code_of_R);
         //------Neu network up
-        if(code_of_R == 4 && info_count.count_increase == 3 ){
+        if(code_of_R > pre_code_of_R && info_count.count_increase == 3 ){
           //Tang fps vs res
           //CLogger::getLogger()->Log("TANG fps and res vi code %d va precode %d", code_of_R, pre_code_of_R );
           if(pre_code_of_R != -1){
@@ -381,7 +388,7 @@ BOOL MCUPVideoOutputDevice::SetFrameData(unsigned x, unsigned y,
           }
           // reset parameters
           info_count.count_increase = 0;
-        } else if(code_of_R == 4){
+        } else if(code_of_R > pre_code_of_R){
            info_count.count_increase++;
         } else  info_count.count_increase = 0;// tang bien dem network up
 
@@ -620,7 +627,10 @@ MCUSubtitles * MCURenderSubtitles(VideoMixPosition & vmp, unsigned fw, unsigned 
   MCUSubtitles * st = new MCUSubtitles;
   st->w = 0;
   st->b = NULL;
-  st->text = vmp.GetEndpointName();
+  // LDLac code
+  PString tmp = vmp.n;
+  tmp+=  ".  " +vmp.GetEndpointName();
+  st->text = tmp;
 
   VMPCfgSplitOptions & split = OpenMCU::vmcfg.vmconf[layout].splitcfg;
   VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[layout].vmpcfg[vmp.n];
