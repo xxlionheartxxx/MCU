@@ -1328,6 +1328,26 @@ void MCUSimpleVideoMixer::ReallocatePositions()
       vmp->n = i;
       vmp->vmpbuf_index = -1;
       VMPInsert(vmp);
+
+      // LDLac. Update id for subtitle
+      MCURemoveSubtitles(*vmp);
+      VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[specialLayout].vmpcfg[vmp->n];
+      for(VideoFrameStoreList::shared_iterator fs_it = frameStores.frameStoreList.begin(); fs_it != frameStores.frameStoreList.end(); ++fs_it)
+      {
+        VideoFrameStore *fs = *fs_it;
+        // render subtitles
+        int pw = vmpcfg.width *fs->width /CIF4_WIDTH;
+        int ph = vmpcfg.height*fs->height/CIF4_HEIGHT;
+        long sub_key = (ph << 16) | pw;
+        MCUSubtitlesList::shared_iterator sub_it = vmp->subtitlesList.Find(sub_key);
+        if(sub_it == vmp->subtitlesList.end())
+        {
+          MCUTRACE(6, "VtideoMixer: render subtitles n=" << vmp->n << " fs=" << fs->width << "x" << fs->height << " pos=" << pw << "x" << ph << " key=" << sub_key);
+          MCUSubtitles *st = MCURenderSubtitles(*vmp, pw, ph, vmpcfg.label_mask, specialLayout);
+          if(st) vmp->subtitlesList.Insert(st, sub_key);
+        }
+      }
+      //LDLac end
     }
   }
 }
