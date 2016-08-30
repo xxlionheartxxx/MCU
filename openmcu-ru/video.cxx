@@ -859,12 +859,165 @@ BOOL MCUSimpleVideoMixer::ReadFrame(ConferenceMember & member, void * buffer, in
       memcpy(buffer, fs.logo_frame.GetPointer(), fs.frame_size);
     return TRUE;
   }
-  return ReadMixedFrame(frameStores, buffer, width, height, amount,type);//LDLac code
+
+  //LDLac code
+  //Send background when room has one participant
+  if(OpenMCU::vmcfg.vmconf[specialLayout].splitcfg.vidnum == 1){
+    return ReadBackgroundFrame(frameStores, buffer, width, height);
+  }
+
+  //Send Mixed Frame if I have required
+  if((type == 500 && OpenMCU::vmcfg.vmconf[specialLayout].splitcfg.vidnum > 1)){
+    // Lay VMP theo ID
+    MCUVMPList::shared_iterator vmp_it = VMPFind(member.GetID());
+    // Lay pos trong VMP
+    int pos = vmp_it->n;
+    return ReadMixedFrameNotMe(frameStores, buffer, width, height, amount, pos);
+  } else // Send specific if I have required
+    return ReadSpecificFrame(frameStores, buffer, width, height, amount,type);
+  //LDLac code end
 }
 
 BOOL MCUSimpleVideoMixer::ReadMixedFrame(void * buffer, int width, int height, PINDEX & amount,unsigned type)//LDLac code
 {
   return ReadMixedFrame(frameStores, buffer, width, height, amount, type); //LDLac code
+}
+
+BOOL MCUSimpleVideoMixer::ReadBackgroundFrame(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height)
+{
+  VideoFrameStoreList::shared_iterator fsit = srcFrameStores.GetFrameStore(width, height);
+  VideoFrameStore & fs = **fsit;
+
+  // Background
+  if(fs.bg_frame.GetSize() != 0)
+      memcpy(buffer, fs.bg_frame.GetPointer(), fs.frame_size);
+  return TRUE;
+}
+
+BOOL MCUSimpleVideoMixer::ReadSpecificFrame(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height, PINDEX & amount, unsigned type){
+
+  VideoFrameStoreList::shared_iterator fsit = srcFrameStores.GetFrameStore(width, height);
+  VideoFrameStore & fs = **fsit;
+
+  /* // Background is useless in this case
+  // Background
+  if(fs.bg_frame.GetSize() != 0)
+      memcpy(buffer, fs.bg_frame.GetPointer(), fs.frame_size);
+  */
+
+  // Lay VMP theo ID
+  MCUVMPList::shared_iterator vmp_it = VMPFind((ConferenceMemberId)type);
+  // Lay pos trong VMP
+  int pos = vmp_it->n;
+  VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[specialLayout].vmpcfg[pos];
+
+  if(vmp_it != vmpList.end())
+  {
+    VideoMixPosition *vmp = *vmp_it;
+    if(vmp->vmpbuf_index >= 0)
+    {
+      MCUBufferYUVArrayList::shared_iterator vmpbuf_it = vmp->bufferList.Find((long)&fs);
+      if(vmpbuf_it != vmp->bufferList.end())
+      {
+        MCUBufferYUV *vmpbuf = (**vmpbuf_it)[vmp->vmpbuf_index];
+        //if(vmpbuf->GetWidth() == pw && vmpbuf->GetHeight() == ph)
+        //{
+          MCUBufferYUV *tmpbufTest = new MCUBufferYUV(width,height);
+    ResizeYUV420P(vmpbuf->GetPointer(), tmpbufTest->GetPointer(), vmpbuf->GetWidth(), vmpbuf->GetHeight(), width, height);
+          if(vmpcfg.blks == 1)
+            CopyRectIntoFrame(tmpbufTest->GetPointer(), buffer, 0, 0, width, height, width, height);
+          else
+            for(unsigned i = 0; i < vmpcfg.blks; i++)
+              CopyRFromRIntoR(vmpbuf->GetPointer(), buffer, 0, 0, width, height,
+                AlignUp2(vmpcfg.blk[i].posx*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].posy*height/CIF4_HEIGHT),
+                AlignUp2(vmpcfg.blk[i].width*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].height*height/CIF4_HEIGHT),
+                width, height, width, height );
+          delete tmpbufTest;
+        //}
+        //else
+        //  MCUTRACE(6, "VideoMixer: VMP read error0: n=" << vmp->n << " fs=" << width << "x" << height << " pos=" << pw << "x" << ph << " buf=" << vmpbuf->GetWidth() << "x" << vmpbuf->GetHeight());
+      }
+    }
+  }
+  //end LDLac code
+  fs.lastRead = time(NULL);
+  return TRUE;
+}
+
+BOOL MCUSimpleVideoMixer::ReadMixedFrameNotMe(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height, PINDEX & amount, unsigned type)
+{
+  VideoFrameStoreList::shared_iterator fsit = srcFrameStores.GetFrameStore(width, height);
+  VideoFrameStore & fs = **fsit;
+
+  // background
+  if(fs.bg_frame.GetSize() != 0)
+    memcpy(buffer, fs.bg_frame.GetPointer(), fs.frame_size);
+    //CLogger::getLogger()->Log("ID %d", (int)type);
+  // New Layout for frame has not me.
+  int newsL=GetMostAppropriateLayout(vmpList.GetSize()-1);
+
+  for(unsigned i = 0; i < OpenMCU::vmcfg.vmconf[newsL].splitcfg.vidnum; i++)
+  {
+    VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[newsL].vmpcfg[i];
+    int px = (float)vmpcfg.posx  *width/CIF4_WIDTH; // pixel x&y of vmp-->fs
+    int py = (float)vmpcfg.posy  *height/CIF4_HEIGHT;
+    int pw = (float)vmpcfg.width *width/CIF4_WIDTH; // pixel w&h of vmp-->fs
+    int ph = (float)vmpcfg.height*height/CIF4_HEIGHT;
+    if(pw<2 || ph<2) continue;
+
+    // Don't add me to mixed frame
+    MCUVMPList::shared_iterator vmp_it;
+    if (i>= type){
+      vmp_it = VMPFind((int)i + 1);
+    } else {
+      vmp_it = VMPFind((int)i);
+    }
+
+    //begin form mixed
+    if(vmp_it != vmpList.end())
+    {
+      VideoMixPosition *vmp = *vmp_it;
+      if(vmp->vmpbuf_index >= 0)
+      {
+        MCUBufferYUVArrayList::shared_iterator vmpbuf_it = vmp->bufferList.Find((long)&fs);
+        if(vmpbuf_it != vmp->bufferList.end())
+        {
+          MCUBufferYUV *vmpbuf = (**vmpbuf_it)[vmp->vmpbuf_index];
+          //if(vmpbuf->GetWidth() == pw && vmpbuf->GetHeight() == ph)
+          //{
+            MCUBufferYUV *tmpbufTest = new MCUBufferYUV(pw,ph);
+      ResizeYUV420P(vmpbuf->GetPointer(), tmpbufTest->GetPointer(), vmpbuf->GetWidth(), vmpbuf->GetHeight(), pw, ph);
+            if(vmpcfg.blks == 1)
+              CopyRectIntoFrame(tmpbufTest->GetPointer(), buffer, px, py, pw, ph, width, height);
+            else
+              for(unsigned i = 0; i < vmpcfg.blks; i++)
+                CopyRFromRIntoR(vmpbuf->GetPointer(), buffer, px, py, pw, ph,
+                  AlignUp2(vmpcfg.blk[i].posx*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].posy*height/CIF4_HEIGHT),
+                  AlignUp2(vmpcfg.blk[i].width*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].height*height/CIF4_HEIGHT),
+                  width, height, pw, ph );
+            delete tmpbufTest;
+          //}
+          //else
+          //  MCUTRACE(6, "VideoMixer: VMP read error0: n=" << vmp->n << " fs=" << width << "x" << height << " pos=" << pw << "x" << ph << " buf=" << vmpbuf->GetWidth() << "x" << vmpbuf->GetHeight());
+        }
+      }
+    }
+
+    // grid
+    if(OpenMCU::vmcfg.vmconf[newsL].vmpcfg[i].border)
+    {
+      if(px != 0)
+        SplitLineLeft((BYTE *)buffer, px, py, pw, ph, width, height);
+      if(py != 0)
+        SplitLineTop((BYTE *)buffer, px, py, pw, ph, width, height);
+      //if(px+pw != width)
+        //SplitLineRight((BYTE *)buffer, px, py, pw, ph, width, height);
+      //if(py+ph != height)
+        //SplitLineBottom((BYTE *)buffer, px, py, pw, ph, width, height);
+    }
+  }
+  fs.lastRead = time(NULL);
+  return TRUE;
 }
 
 BOOL MCUSimpleVideoMixer::ReadMixedFrame(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height, PINDEX & amount,unsigned type) //LDLac code
@@ -877,71 +1030,16 @@ BOOL MCUSimpleVideoMixer::ReadMixedFrame(VideoFrameStoreList & srcFrameStores, v
     memcpy(buffer, fs.bg_frame.GetPointer(), fs.frame_size);
     //CLogger::getLogger()->Log("ID %d", (int)type);
 
-  MCUVMPList::shared_iterator vmp_it3 = VMPFind((ConferenceMemberId)type);
-  MCUVMPList::shared_iterator vmp_it4 = VMPFind((int) -200);
-
-    //LDLac code
-  if( type == 500 || OpenMCU::vmcfg.vmconf[specialLayout].splitcfg.vidnum == 1 || vmp_it3 == vmp_it4)
+  for(unsigned i = 0; i < OpenMCU::vmcfg.vmconf[specialLayout].splitcfg.vidnum; i++)
   {
-    for(unsigned i = 0; i < OpenMCU::vmcfg.vmconf[specialLayout].splitcfg.vidnum; i++)
-    {
-      VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[specialLayout].vmpcfg[i];
-      int px = (float)vmpcfg.posx  *width/CIF4_WIDTH; // pixel x&y of vmp-->fs
-      int py = (float)vmpcfg.posy  *height/CIF4_HEIGHT;
-      int pw = (float)vmpcfg.width *width/CIF4_WIDTH; // pixel w&h of vmp-->fs
-      int ph = (float)vmpcfg.height*height/CIF4_HEIGHT;
-      if(pw<2 || ph<2) continue;
+    VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[specialLayout].vmpcfg[i];
+    int px = (float)vmpcfg.posx  *width/CIF4_WIDTH; // pixel x&y of vmp-->fs
+    int py = (float)vmpcfg.posy  *height/CIF4_HEIGHT;
+    int pw = (float)vmpcfg.width *width/CIF4_WIDTH; // pixel w&h of vmp-->fs
+    int ph = (float)vmpcfg.height*height/CIF4_HEIGHT;
+    if(pw<2 || ph<2) continue;
 
-      MCUVMPList::shared_iterator vmp_it = VMPFind((int)i);
-      if(vmp_it != vmpList.end())
-      {
-        VideoMixPosition *vmp = *vmp_it;
-        if(vmp->vmpbuf_index >= 0)
-        {
-          MCUBufferYUVArrayList::shared_iterator vmpbuf_it = vmp->bufferList.Find((long)&fs);
-          if(vmpbuf_it != vmp->bufferList.end())
-          {
-            MCUBufferYUV *vmpbuf = (**vmpbuf_it)[vmp->vmpbuf_index];
-            //if(vmpbuf->GetWidth() == pw && vmpbuf->GetHeight() == ph)
-            //{
-              MCUBufferYUV *tmpbufTest = new MCUBufferYUV(pw,ph);
-	      ResizeYUV420P(vmpbuf->GetPointer(), tmpbufTest->GetPointer(), vmpbuf->GetWidth(), vmpbuf->GetHeight(), pw, ph);
-              if(vmpcfg.blks == 1)
-                CopyRectIntoFrame(tmpbufTest->GetPointer(), buffer, px, py, pw, ph, width, height);
-              else
-                for(unsigned i = 0; i < vmpcfg.blks; i++)
-                  CopyRFromRIntoR(vmpbuf->GetPointer(), buffer, px, py, pw, ph,
-                    AlignUp2(vmpcfg.blk[i].posx*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].posy*height/CIF4_HEIGHT),
-                    AlignUp2(vmpcfg.blk[i].width*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].height*height/CIF4_HEIGHT),
-                    width, height, pw, ph );
-              delete tmpbufTest;
-            //}
-            //else
-            //  MCUTRACE(6, "VideoMixer: VMP read error0: n=" << vmp->n << " fs=" << width << "x" << height << " pos=" << pw << "x" << ph << " buf=" << vmpbuf->GetWidth() << "x" << vmpbuf->GetHeight());
-          }
-        }
-      }
-
-      // grid
-      if(OpenMCU::vmcfg.vmconf[specialLayout].vmpcfg[i].border)
-      {
-        if(px != 0)
-          SplitLineLeft((BYTE *)buffer, px, py, pw, ph, width, height);
-        if(py != 0)
-          SplitLineTop((BYTE *)buffer, px, py, pw, ph, width, height);
-        //if(px+pw != width)
-          //SplitLineRight((BYTE *)buffer, px, py, pw, ph, width, height);
-        //if(py+ph != height)
-          //SplitLineBottom((BYTE *)buffer, px, py, pw, ph, width, height);
-      }
-    }
-  } else { // gui ve client theo yeu cau cua khac hang
-    // Lay VMP theo ID
-    MCUVMPList::shared_iterator vmp_it1 = VMPFind((ConferenceMemberId)type);
-    // Lay pos trong VMP
-    int pos = vmp_it1->n;
-    VMPCfgOptions & vmpcfg = OpenMCU::vmcfg.vmconf[specialLayout].vmpcfg[pos];
-    MCUVMPList::shared_iterator vmp_it = VMPFind(pos);
+    MCUVMPList::shared_iterator vmp_it = VMPFind((int)i);
     if(vmp_it != vmpList.end())
     {
       VideoMixPosition *vmp = *vmp_it;
@@ -953,22 +1051,35 @@ BOOL MCUSimpleVideoMixer::ReadMixedFrame(VideoFrameStoreList & srcFrameStores, v
           MCUBufferYUV *vmpbuf = (**vmpbuf_it)[vmp->vmpbuf_index];
           //if(vmpbuf->GetWidth() == pw && vmpbuf->GetHeight() == ph)
           //{
-            MCUBufferYUV *tmpbufTest = new MCUBufferYUV(width,height);
-	    ResizeYUV420P(vmpbuf->GetPointer(), tmpbufTest->GetPointer(), vmpbuf->GetWidth(), vmpbuf->GetHeight(), width, height);
+            MCUBufferYUV *tmpbufTest = new MCUBufferYUV(pw,ph);
+      ResizeYUV420P(vmpbuf->GetPointer(), tmpbufTest->GetPointer(), vmpbuf->GetWidth(), vmpbuf->GetHeight(), pw, ph);
             if(vmpcfg.blks == 1)
-              CopyRectIntoFrame(tmpbufTest->GetPointer(), buffer, 0, 0, width, height, width, height);
+              CopyRectIntoFrame(tmpbufTest->GetPointer(), buffer, px, py, pw, ph, width, height);
             else
               for(unsigned i = 0; i < vmpcfg.blks; i++)
-                CopyRFromRIntoR(vmpbuf->GetPointer(), buffer, 0, 0, width, height,
+                CopyRFromRIntoR(vmpbuf->GetPointer(), buffer, px, py, pw, ph,
                   AlignUp2(vmpcfg.blk[i].posx*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].posy*height/CIF4_HEIGHT),
                   AlignUp2(vmpcfg.blk[i].width*width/CIF4_WIDTH), AlignUp2(vmpcfg.blk[i].height*height/CIF4_HEIGHT),
-                  width, height, width, height );
+                  width, height, pw, ph );
             delete tmpbufTest;
           //}
           //else
           //  MCUTRACE(6, "VideoMixer: VMP read error0: n=" << vmp->n << " fs=" << width << "x" << height << " pos=" << pw << "x" << ph << " buf=" << vmpbuf->GetWidth() << "x" << vmpbuf->GetHeight());
         }
       }
+    }
+
+    // grid
+    if(OpenMCU::vmcfg.vmconf[specialLayout].vmpcfg[i].border)
+    {
+      if(px != 0)
+        SplitLineLeft((BYTE *)buffer, px, py, pw, ph, width, height);
+      if(py != 0)
+        SplitLineTop((BYTE *)buffer, px, py, pw, ph, width, height);
+      //if(px+pw != width)
+        //SplitLineRight((BYTE *)buffer, px, py, pw, ph, width, height);
+      //if(py+ph != height)
+        //SplitLineBottom((BYTE *)buffer, px, py, pw, ph, width, height);
     }
   }
   //end LDLac code

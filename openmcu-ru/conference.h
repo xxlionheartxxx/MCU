@@ -601,6 +601,7 @@ class Conference : public PObject
 
     //--------LDLac code
     MCUSimpleVideoMixer * find_VideoMix (long mixerNumber_test);
+    void ResetViewID (unsigned type);
     //--------LDLac code
   protected:
     ConferenceManager & manager;

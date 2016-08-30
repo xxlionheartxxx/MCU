@@ -445,6 +445,12 @@ class MCUSimpleVideoMixer : public MCUVideoMixer
     virtual void ReallocatePositions();
     BOOL ReadMixedFrame(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height, PINDEX & amount, unsigned type);//LDLac code
 
+    //LDLac code
+    BOOL ReadSpecificFrame(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height, PINDEX & amount, unsigned type);
+    BOOL ReadBackgroundFrame(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height);
+    BOOL ReadMixedFrameNotMe(VideoFrameStoreList & srcFrameStores, void * buffer, int width, int height, PINDEX & amount, unsigned type);
+    //LDLac code end
+
     VideoFrameStoreList frameStores;  // list of framestores for data
 
     int specialLayout;
