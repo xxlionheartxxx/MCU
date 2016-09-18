@@ -189,8 +189,8 @@
 # Added auto inclusion of ptlib make rules
 #
 
-PWLIBDIR	= /home/mypc/MCU1/openmcu/libs/ptlib
-OPENH323DIR	= /home/mypc/MCU1/openmcu/libs/h323plus
+PWLIBDIR	= /home/mypc/MCU/libs/ptlib
+OPENH323DIR	= /home/mypc/MCU/libs/h323plus
 STDCCFLAGS	+= 
 LDFLAGS		+= 
 LDLIBS		+= 

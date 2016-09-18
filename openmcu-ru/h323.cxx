@@ -3160,7 +3160,15 @@ BOOL MCUH323Connection::InitGrabber(PVideoInputDevice * grabber, int newFrameWid
 }
 
 #endif
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//LDlac code
+void toLowCase (std::string &tmp){
+  for(int i = 0; i < tmp.length();i++)
+  {
+    if (tmp[i]>=65 && tmp[i]<=90)
+    tmp[i] = tmp[i]+32;
+  }
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MCUH323Connection::OnUserInputString(const PString & str)
@@ -3268,6 +3276,7 @@ void MCUH323Connection::OnUserInputString(const PString & str)
     // the old "H.245/User Input Indication/DTMF" by kay27
     //---------------LDLac code-----------
     std::string a = dtmfBuffer.operator std::string(); //quan trong chuyen dtmf sang string
+    toLowCase(a);
     std::string command, code_linphone;
     // lay id cua sip massage
     int d = conferenceMember->GetID();
@@ -3283,10 +3292,13 @@ void MCUH323Connection::OnUserInputString(const PString & str)
     }
 
     command.append(a,0,9); // "LDLacVideoType = "
-    if(command == "ViewID = "){
-      code_linphone.append(a,9,1); 
+
+    if(command == "viewid = ")
+    {
+      //CLogger::getLogger()->Log("HELLLOOOO" + a);
+      code_linphone.append(a,9,1);
       //frame mix
-      if(code_linphone == "M"){
+      if(code_linphone == "m"){
         conferenceMember->setVideoType(500);
         /*if(videoTransmitChannel)
           CLogger::getLogger()->Log("HELLLOOOO %d", conferenceMember->GetID());*/

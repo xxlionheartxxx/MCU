@@ -861,6 +861,9 @@ BOOL MCUSimpleVideoMixer::ReadFrame(ConferenceMember & member, void * buffer, in
   }
 
   //LDLac code
+  /*clock_t time1 = clock();
+  time1 = clock() - time1;
+  CLogger::getLogger()->Log("it take %f", ((float)time1)/CLOCKS_PER_SEC);*/
   //Send background when room has one participant
   if(OpenMCU::vmcfg.vmconf[specialLayout].splitcfg.vidnum == 1){
     return ReadBackgroundFrame(frameStores, buffer, width, height);
@@ -973,7 +976,7 @@ BOOL MCUSimpleVideoMixer::ReadMixedFrameNotMe(VideoFrameStoreList & srcFrameStor
       vmp_it = VMPFind((int)i);
     }
 
-    //begin form mixed
+    //begin forming mixed
     if(vmp_it != vmpList.end())
     {
       VideoMixPosition *vmp = *vmp_it;
@@ -986,7 +989,7 @@ BOOL MCUSimpleVideoMixer::ReadMixedFrameNotMe(VideoFrameStoreList & srcFrameStor
           //if(vmpbuf->GetWidth() == pw && vmpbuf->GetHeight() == ph)
           //{
             MCUBufferYUV *tmpbufTest = new MCUBufferYUV(pw,ph);
-      ResizeYUV420P(vmpbuf->GetPointer(), tmpbufTest->GetPointer(), vmpbuf->GetWidth(), vmpbuf->GetHeight(), pw, ph);
+            ResizeYUV420P(vmpbuf->GetPointer(), tmpbufTest->GetPointer(), vmpbuf->GetWidth(), vmpbuf->GetHeight(), pw, ph);
             if(vmpcfg.blks == 1)
               CopyRectIntoFrame(tmpbufTest->GetPointer(), buffer, px, py, pw, ph, width, height);
             else

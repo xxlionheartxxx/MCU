@@ -324,7 +324,7 @@ configure:2994: $? = 0
 configure:2996: ./conftest
 configure:2999: $? = 0
 configure:3014: result: yes
-configure:3084: checking for /home/mypc/MCU1/openmcu/libs/ptlib/version.h
+configure:3084: checking for /home/mypc/MCU/libs/ptlib/version.h
 configure:3100: result: yes
 configure:3328: checking Checking PWLib version 2.0.1
 configure:3349: result: ok
@@ -462,7 +462,7 @@ ac_cv_env_host_alias_value=
 ac_cv_env_target_alias_set=
 ac_cv_env_target_alias_value=
 ac_cv_exeext=
-ac_cv_file__home_mypc_MCU1_openmcu_libs_ptlib_version_h=yes
+ac_cv_file__home_mypc_MCU_libs_ptlib_version_h=yes
 ac_cv_header_inttypes_h=yes
 ac_cv_header_memory_h=yes
 ac_cv_header_stdc=yes
@@ -530,7 +530,7 @@ NOAUDIOCODECS=''
 NOTRACE=''
 NOVIDEO=''
 OBJEXT='o'
-OPENH323DIR='/home/mypc/MCU1/openmcu/libs/h323plus'
+OPENH323DIR='/home/mypc/MCU/libs/h323plus'
 OPENH323_VERSION='1.20.2'
 PACKAGE_BUGREPORT=''
 PACKAGE_NAME=''
@@ -539,7 +539,7 @@ PACKAGE_TARNAME=''
 PACKAGE_VERSION=''
 PATH_SEPARATOR=':'
 PTLIB_CONFIG=''
-PWLIBDIR='/home/mypc/MCU1/openmcu/libs/ptlib'
+PWLIBDIR='/home/mypc/MCU/libs/ptlib'
 SHELL='/bin/bash'
 STDCCFLAGS=''
 ac_ct_CC='gcc'

@@ -213,7 +213,7 @@
 PREFIX=/usr/local
 exec_prefix = ${PREFIX}
 LIBDIR=${exec_prefix}/lib
-export PTLIBDIR=/home/mypc/MCU1/openmcu/libs/ptlib
+export PTLIBDIR=/home/mypc/MCU/libs/ptlib
 
 INSTALL=/usr/bin/install -c
 

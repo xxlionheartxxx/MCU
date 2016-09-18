@@ -285,7 +285,7 @@
 PREFIX=/usr/local
 exec_prefix = $(PREFIX)
 LIBDIR=${exec_prefix}/lib
-export OPENH323DIR=/home/mypc/MCU1/openmcu/libs/h323plus
+export OPENH323DIR=/home/mypc/MCU/libs/h323plus
 
 INSTALL=/usr/bin/install -c
 

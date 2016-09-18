@@ -863,8 +863,8 @@ configure:16621: $? = 0
 configure:16621: result: yes
 configure:16627: checking for _doprnt
 configure:16627: gcc -o conftest -g -O2   conftest.c  >&5
-/tmp/ccPd84wa.o: In function `main':
-/home/mypc/MCU1/openmcu/libs/libg722_1/conftest.c:61: undefined reference to `_doprnt'
+/tmp/cc5lJnFM.o: In function `main':
+/home/mypc/MCU/libs/libg722_1/conftest.c:61: undefined reference to `_doprnt'
 collect2: error: ld returned 1 exit status
 configure:16627: $? = 1
 configure: failed program was:
@@ -981,7 +981,7 @@ configure:16875: $? = 0
 configure:16886: result: int,fd_set *,struct timeval *
 configure:16910: checking for lrint
 configure:16936: gcc -o conftest -lm   conftest.c  >&5
-/tmp/ccuQjNqO.o: In function `main':
+/tmp/ccTmJJbm.o: In function `main':
 conftest.c:(.text+0x1c): undefined reference to `lrint'
 conftest.c:(.text+0x39): undefined reference to `lrint'
 collect2: error: ld returned 1 exit status
@@ -1040,7 +1040,7 @@ configure: failed program was:
 configure:16948: result: no
 configure:16957: checking for lrintf
 configure:16983: gcc -o conftest -lm   conftest.c  >&5
-/tmp/cc4ixJsT.o: In function `main':
+/tmp/ccg6TyLs.o: In function `main':
 conftest.c:(.text+0xd): undefined reference to `lrintf'
 conftest.c:(.text+0x1f): undefined reference to `lrintf'
 collect2: error: ld returned 1 exit status
@@ -1099,7 +1099,7 @@ configure: failed program was:
 configure:16995: result: no
 configure:17004: checking for llrint
 configure:17030: gcc -o conftest -lm   conftest.c  >&5
-/tmp/ccbGprJZ.o: In function `main':
+/tmp/ccru2cfx.o: In function `main':
 conftest.c:(.text+0x1c): undefined reference to `lrint'
 collect2: error: ld returned 1 exit status
 configure:17030: $? = 1
@@ -1157,7 +1157,7 @@ configure: failed program was:
 configure:17042: result: no
 configure:17051: checking for llrintf
 configure:17077: gcc -o conftest -lm   conftest.c  >&5
-/tmp/ccAexEi5.o: In function `main':
+/tmp/ccdm8NvC.o: In function `main':
 conftest.c:(.text+0x11): undefined reference to `lrintf'
 collect2: error: ld returned 1 exit status
 configure:17077: $? = 1
@@ -2161,7 +2161,7 @@ host_vendor='unknown'
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
-install_sh='${SHELL} /home/mypc/MCU1/openmcu/libs/libg722_1/config/install-sh'
+install_sh='${SHELL} /home/mypc/MCU/libs/libg722_1/config/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localedir='${datarootdir}/locale'
