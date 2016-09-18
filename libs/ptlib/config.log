@@ -513,8 +513,8 @@ configure:6631: checking if plugins support needs to be compiled
 configure:6644: result: no
 configure:6691: checking for res_ninit
 configure:6747: g++ -o conftest -g -O2   conftest.cpp  >&5
-/tmp/ccbfUCKP.o: In function `main':
-/home/mypc/MCU1/openmcu/libs/ptlib/conftest.cpp:80: undefined reference to `res_ninit'
+/tmp/ccPHbuB2.o: In function `main':
+/home/mypc/MCU/libs/ptlib/conftest.cpp:80: undefined reference to `res_ninit'
 collect2: error: ld returned 1 exit status
 configure:6754: $? = 1
 configure: failed program was:
@@ -1218,7 +1218,7 @@ PACKAGE_TARNAME=''
 PACKAGE_VERSION=''
 PATH_SEPARATOR=':'
 PTINSTDIR=''
-PTLIBDIR='/home/mypc/MCU1/openmcu/libs/ptlib'
+PTLIBDIR='/home/mypc/MCU/libs/ptlib'
 PTLIB_VERSION='2.0.1'
 P_STATIC_ENDLDLIBS=''
 P_STATIC_LDFLAGS=''

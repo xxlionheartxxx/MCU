@@ -941,6 +941,10 @@ BOOL Conference::RemoveMember(ConferenceMember * memberToRemove, BOOL removeFrom
     }
   }
 
+  // LDLac code
+  memberToRemove->setVideoType(500);
+  ResetViewID((unsigned)memberToRemove->GetID());
+  //LDLac code end
 
   // trigger H245 thread for leave message
   //new NotifyH245Thread(*this, FALSE, memberToRemove);
@@ -948,6 +952,17 @@ BOOL Conference::RemoveMember(ConferenceMember * memberToRemove, BOOL removeFrom
   return TRUE;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//LDLac code
+void Conference::ResetViewID(unsigned type)
+{
+  for (MCUMemberList::shared_iterator it = memberList.begin(); it != memberList.end(); ++it)
+  {
+    ConferenceMember * tmp = *it;
+    if(tmp->getVideoType() == type)
+      tmp->setVideoType(500);
+  }
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Conference::RemoveAudioConnection(ConferenceMember * member)

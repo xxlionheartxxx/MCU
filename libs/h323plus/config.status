@@ -483,7 +483,7 @@ s,@CFLAGS@,-g -O2,;t t
 s,@ac_ct_CC@,gcc,;t t
 s,@CPP@,gcc -E,;t t
 s,@EGREP@,grep -E,;t t
-s,@OPENH323DIR@,/home/mypc/MCU1/openmcu/libs/h323plus,;t t
+s,@OPENH323DIR@,/home/mypc/MCU/libs/h323plus,;t t
 s,@INSTALLPREFIX@,/usr/local,;t t
 s,@LIBDIR@,${exec_prefix}/lib,;t t
 s,@MAJOR_VERSION@,1,;t t
@@ -491,7 +491,7 @@ s,@MINOR_VERSION@,20,;t t
 s,@BUILD_NUMBER@,2,;t t
 s,@OPENH323_VERSION@,1.20.2,;t t
 s,@PTLIB_CONFIG@,,;t t
-s,@PWLIBDIR@,/home/mypc/MCU1/openmcu/libs/ptlib,;t t
+s,@PWLIBDIR@,/home/mypc/MCU/libs/ptlib,;t t
 s,@NOTRACE@,,;t t
 s,@NOAUDIOCODECS@,,;t t
 s,@NOVIDEO@,,;t t
