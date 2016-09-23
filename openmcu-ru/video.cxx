@@ -201,6 +201,8 @@ BOOL MCUPVideoInputDevice::GetFrameData(BYTE * buffer, PINDEX * bytesReturned)
         //fps
   			SetFrameRate(15);
         SetFrameSize(704,576);
+        if(FPSMin > 15) FPSMin =15;
+        if(FPSMax < 15) FPSMax =15;
         //res
   			break;
   		case 3:
@@ -208,6 +210,8 @@ BOOL MCUPVideoInputDevice::GetFrameData(BYTE * buffer, PINDEX * bytesReturned)
         //fps
   		  SetFrameRate(10);
         SetFrameSize(352,288);
+        if(FPSMin > 10) FPSMin =10;
+        if(FPSMax < 10) FPSMax =10;
   		  //res
   			break;
   		case 2:
@@ -215,6 +219,8 @@ BOOL MCUPVideoInputDevice::GetFrameData(BYTE * buffer, PINDEX * bytesReturned)
         //fps
   		  SetFrameRate(7);
         SetFrameSize(176,144);
+        if(FPSMin > 7) FPSMin =7;
+        if(FPSMax < 7) FPSMax =7;
   		  //res
   			break;
       case 1:
@@ -222,6 +228,8 @@ BOOL MCUPVideoInputDevice::GetFrameData(BYTE * buffer, PINDEX * bytesReturned)
         //fps
         SetFrameRate(3);
         SetFrameSize(176,144);
+        if(FPSMin > 3) FPSMin =3;
+        if(FPSMax < 3) FPSMax =3;
         //res
         break;
       case 0:
@@ -229,6 +237,8 @@ BOOL MCUPVideoInputDevice::GetFrameData(BYTE * buffer, PINDEX * bytesReturned)
         //fps
         SetFrameRate(1);
         SetFrameSize(176,144);
+        if(FPSMin > 1) FPSMin =1;
+        if(FPSMax < 1) FPSMax =1;
         //res
         break;
   		default:
@@ -334,7 +344,6 @@ int Get_code(float R_Qos){
 	return -1;
 }
 //----------end LDLac code
-
 BOOL MCUPVideoOutputDevice::SetFrameData(unsigned x, unsigned y,
                                               unsigned width, unsigned height,
                                               const BYTE * data,
@@ -345,6 +354,7 @@ BOOL MCUPVideoOutputDevice::SetFrameData(unsigned x, unsigned y,
     PTRACE(1, "OpenMCU only supports full frame writes");
     return FALSE;
   }
+  double timetable[] = {60,60,60,60,60,60,30,18,28,17,18,46,55,29,33};
   //----------- LDLac cdoe
   ConferenceMember * member = mcuConnection.GetConferenceMember();
   /*static float sum_R = 0.0;
@@ -359,6 +369,22 @@ BOOL MCUPVideoOutputDevice::SetFrameData(unsigned x, unsigned y,
 
   info_count.sum_R += mcuConnection.mcu_connection_get_current_quality();
   info_count.count_sum ++;
+  if(last_time ==0 ) last_time =time(NULL);
+  if(difftime(NOW,last_time) == timetable[timecount] && timecount <15){
+    float phantram = (float)PLost/(float)PSend *100;
+    CLogger::getLogger()->Log("Lan %d : PSend %d  ,PLost %d ,Phantramlost  %f, MaxJ %f,  MinJ %f ,RMax %f , RMix %f, FPSMin %d ,FPSMax %d\n",timecount, PSend,PLost,phantram,JMax,JMin,RMax,RMin,FPSMin, FPSMax);
+    timecount ++;
+    PSend =0;
+    PLost =0;
+    JMax =0;
+    JMin =0;
+    RMax =0;
+    RMin =0;
+    FPSMin=0;
+    FPSMax =0;
+    last_time = NOW;
+
+  }
   //CLogger::getLogger()->Log("member id %f co QOS %d",difftime(NOW,info_count.sum_quality_timer),member->getVideoType() );
   if (difftime(NOW,info_count.sum_quality_timer) >= _CHECK_INTERVAL_ ){
     // calculate average
@@ -866,7 +892,8 @@ BOOL MCUSimpleVideoMixer::ReadFrame(ConferenceMember & member, void * buffer, in
   CLogger::getLogger()->Log("it take %f", ((float)time1)/CLOCKS_PER_SEC);*/
   //Send background when room has one participant
   if(OpenMCU::vmcfg.vmconf[specialLayout].splitcfg.vidnum == 1){
-    return ReadBackgroundFrame(frameStores, buffer, width, height);
+    //return ReadBackgroundFrame(frameStores, buffer, width, height);
+    return ReadMixedFrame (frameStores, buffer, width, height, amount, 500);
   }
 
   //Send Mixed Frame if I have required

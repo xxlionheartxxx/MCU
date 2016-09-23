@@ -1,6 +1,10 @@
 #include "Logger.h"
 //#include<Utilities.h>
+//string PathToFile = __FILE__;
+//const string path = __FILE__;
+//int position = path.find("Logger.cxx");
 const string CLogger::m_sFileName = "/home/mypc/Desktop/LogOpenMCU.txt";
+//const string CLogger::m_sFileName = PathToFile.replace(position,10,"LogOpenMCU.txt");
 CLogger* CLogger:: m_pThis = NULL;
 ofstream CLogger::m_Logfile;
 pthread_mutex_t CLogger::lock;

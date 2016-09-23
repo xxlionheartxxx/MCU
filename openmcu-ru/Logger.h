@@ -7,6 +7,7 @@
 #include <time.h>
 #include <pthread.h>
 
+
 using namespace std;
 
 #define LOGGER CLogger::getLogger()

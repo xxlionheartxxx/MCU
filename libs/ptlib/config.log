@@ -513,7 +513,7 @@ configure:6631: checking if plugins support needs to be compiled
 configure:6644: result: no
 configure:6691: checking for res_ninit
 configure:6747: g++ -o conftest -g -O2   conftest.cpp  >&5
-/tmp/ccPHbuB2.o: In function `main':
+/tmp/cc52O3u1.o: In function `main':
 /home/mypc/MCU/libs/ptlib/conftest.cpp:80: undefined reference to `res_ninit'
 collect2: error: ld returned 1 exit status
 configure:6754: $? = 1

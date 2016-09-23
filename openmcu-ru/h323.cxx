@@ -3288,7 +3288,9 @@ void MCUH323Connection::OnUserInputString(const PString & str)
     for(MCUMemberList::shared_iterator it2 = memberList.begin(); it2 != memberList.end(); ++it2)
     {
       ConferenceMember * member = *it2;
-      CLogger::getLogger()->Log("ID %d", member->GetID());
+      string PathToFile = __FILE__;
+      CLogger::getLogger()->Log(PathToFile);
+
     }
 
     command.append(a,0,9); // "LDLacVideoType = "
