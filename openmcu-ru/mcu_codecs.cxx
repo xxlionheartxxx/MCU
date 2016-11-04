@@ -2,6 +2,7 @@
 #include "precompile.h"
 #include "mcu.h"
 #include "mcu_codecs.h"
+#include "global_variable.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -891,6 +892,9 @@ BOOL MCUVideoCodec::Read(BYTE * buffer, unsigned & length, RTP_DataFrame & dst, 
   flags = sendIntra ? PluginCodec_CoderForceIFrame : 0;
   int retval = 0;
 
+  /*if (change){
+    flags = PluginCodec_ReturnCoderIFrame;
+  }*/
   retval = (codec->codecFunction)(codec, context, bufferRTP.GetPointer(), &fromLen, dst.GetPointer(), &toLen, &flags);
 
   if(retval == 0 && codec != NULL)

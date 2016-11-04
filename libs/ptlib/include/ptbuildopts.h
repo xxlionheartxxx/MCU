@@ -251,7 +251,7 @@
 // host type
 //
 
-#define P_LINUX "3.13.0-46-generic"
+#define P_LINUX "3.13.0-96-generic"
 /* #undef P_FREEBSD */
 /* #undef P_OPENBSD */
 /* #undef P_NETBSD */

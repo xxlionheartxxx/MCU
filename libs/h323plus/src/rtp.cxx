@@ -755,7 +755,7 @@ RTP_Session::RTP_Session(
                          unsigned id, RTP_UserData * data)
   : canonicalName(PProcess::Current().GetUserName()),
     toolName(PProcess::Current().GetName()),
-    reportTimeInterval(0, 12),  // Seconds
+    reportTimeInterval(0, 1),  // Seconds
     firstDataReceivedTime(0),
     reportTimer(reportTimeInterval)
 #ifdef H323_RTP_AGGREGATE

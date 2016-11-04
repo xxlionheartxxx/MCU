@@ -18,12 +18,6 @@
 #define MAX_SUBFRAMES        100
 #define FRAMESTORE_TIMEOUT   60 /* s */
 
-extern int PSend , PLost;
-extern float JMax, JMin;
-extern float RMax, RMin;
-extern int timecount;
-extern int FPSMin=20, FPSMax=0;
-extern time_t last_time;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if USE_FREETYPE

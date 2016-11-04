@@ -4,7 +4,8 @@
 #include "mcu_rtp.h"
 #include "mcu_rtp_secure.h"
 #include "mcu_codecs.h"
-//#include "video.h"
+#include "global_variable.h"
+time_t last =0 ;
 const unsigned SecondsFrom1900to1970 = (70*365+17)*24*60*60U;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -844,11 +845,6 @@ float compute_rtt(PTimeInterval current, PTimeInterval lrr, PTimeInterval dlrr){
 
 ///----------end LDLac code 1/4
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-int PSend =0, PLost =0;
-float JMax =0 , JMin =0;
-float RMax =0, RMin =0;
-int timecount =0;
-time_t last_time =0;
 RTP_Session::SendReceiveStatus MCU_RTP_UDP::OnReceiveControl(RTP_ControlFrame & frame)
 {
   ////////////LDLac code
@@ -869,6 +865,7 @@ RTP_Session::SendReceiveStatus MCU_RTP_UDP::OnReceiveControl(RTP_ControlFrame & 
       int cum_loss = ra[ra.GetSize()-1].totalLost;
       int extseq = ra[ra.GetSize() - 1].lastSequenceNumber;
       float inter_jitter = (float)ra[ra.GetSize()-1].jitter/clock_rate;
+      float jitter = ra[ra.GetSize()-1].jitter;
       int diff_total_outgoing = packetsSent- packet_info.last_packet_sent_count_num;
       int diff;
       float loss_rate;
@@ -892,14 +889,28 @@ RTP_Session::SendReceiveStatus MCU_RTP_UDP::OnReceiveControl(RTP_ControlFrame & 
         float rt_prop = compute_rtt(current, ra[ra.GetSize()-1].lastTimestamp, ra[ra.GetSize()-1].delay);
         R = RATING_SCALE * compute_rating(loss_rate/100.f,inter_jitter,0, rt_prop);
         if(clock_rate == 90000){
+          if(last == 0) last =last_time;
+          RMax += R;
+          RMin ++;
           PSend += diff_total_outgoing;
           PLost += new_losses;
-          if(JMax==0 && JMin==0){JMax=JMin =inter_jitter;}
-          if(RMax ==0 && RMin ==0) {RMax =RMin =R;}
-          if(JMax < inter_jitter) JMax =inter_jitter;
-          if( inter_jitter < JMin) JMin =inter_jitter;
-          if(RMax < R) RMax = R;
-          if(R < RMin) RMin = R;
+          if(JMax==0 && JMin==0){JMax=JMin =jitter;}
+          if(JMax < jitter) JMax =jitter;
+          if( jitter < JMin) JMin =jitter;
+          if(last != last_time){
+            float phantram = (float)PLost/(float)PSend *100;
+            CLogger::getLogger()->Log("Lan %d : PSend %d  ,PLost %d ,Phantramlost  %f, MaxJ %f,  MinJ %f , R: %f, FPSMin %d ,FPSMax %d\n",timecount, PSend,PLost,phantram,JMax,JMin,RMax/RMin,FPSMinLDL, FPSMaxLDL);
+            timecount ++;
+            PSend =0;
+            PLost =0;
+            JMax =0;
+            JMin =0;
+            RMax =0;
+            RMin =0;
+            FPSMinLDL=20;
+            FPSMaxLDL =0;
+            last = last_time;
+          }
         }
         mcu_session_set_current_quality(R);
         //CLogger::getLogger()->Log("inter_jitter::%d \t clock_rate %d \t ps %d \t pl %d\n", ra[ra.GetSize()-1].jitter, clock_rate,diff_total_outgoing, new_losses);
@@ -921,6 +932,7 @@ RTP_Session::SendReceiveStatus MCU_RTP_UDP::OnReceiveControl(RTP_ControlFrame & 
       int cum_loss = ra[ra.GetSize()-1].totalLost;
       int extseq = ra[ra.GetSize() - 1].lastSequenceNumber;
       float inter_jitter = (float)ra[ra.GetSize()-1].jitter/clock_rate;
+      float jitter = ra[ra.GetSize()-1].jitter;
       int diff_total_outgoing = packetsSent- packet_info.last_packet_sent_count_num;
       int diff;
       float loss_rate;
@@ -944,14 +956,28 @@ RTP_Session::SendReceiveStatus MCU_RTP_UDP::OnReceiveControl(RTP_ControlFrame & 
         float rt_prop = compute_rtt(current, ra[ra.GetSize()-1].lastTimestamp, ra[ra.GetSize()-1].delay);
         R = RATING_SCALE * compute_rating(loss_rate/100.f,inter_jitter,0, rt_prop);
         if(clock_rate == 90000){
+          if(last == 0) last =last_time;
+          RMax += R;
+          RMin ++;
           PSend += diff_total_outgoing;
           PLost += new_losses;
-          if(JMax==0 && JMin==0){JMax=JMin =inter_jitter;}
-          if(RMax ==0 && RMin ==0) {RMax =RMin =R;}
-          if(JMax < inter_jitter) JMax =inter_jitter;
-          if( inter_jitter < JMin) JMin =inter_jitter;
-          if(RMax < R) RMax = R;
-          if(R < RMin) RMin = R;
+          if(JMax==0 && JMin==0){JMax=JMin =jitter;}
+          if(JMax < jitter) JMax =jitter;
+          if( jitter < JMin) JMin =jitter;
+          if(last != last_time){
+            float phantram = (float)PLost/(float)PSend *100;
+            CLogger::getLogger()->Log("Lan %d : PSend %d  ,PLost %d ,Phantramlost  %f, MaxJ %f,  MinJ %f , R: %f, FPSMin %d ,FPSMax %d\n",timecount, PSend,PLost,phantram,JMax,JMin,RMax/RMin,FPSMinLDL, FPSMaxLDL);
+            timecount ++;
+            PSend =0;
+            PLost =0;
+            JMax =0;
+            JMin =0;
+            RMax =0;
+            RMin =0;
+            FPSMinLDL=20;
+            FPSMaxLDL =0;
+            last = last_time;  
+          }
         }
         mcu_session_set_current_quality(R);
         //CLogger::getLogger()->Log("inter_jitter::%d \t clock_rate %d \t ps %f \t pl \n", ra[ra.GetSize()-1].jitter, clock_rate,diff_total_outgoing, new_losses);
@@ -1064,7 +1090,7 @@ BOOL MCU_RTP_UDP::WriteControl(RTP_ControlFrame & frame)
   // Trying to send a PDU before we are set up!
   if(!remoteAddress.IsValid() || remoteControlPort == 0)
     return TRUE;
-
+  CLogger::getLogger()->Log("qua cham");
   // Сделать несколько попыток записи, трассировка на последней попытке.
   // Всегда возвращает TRUE.
   int writeAttempts = 0;

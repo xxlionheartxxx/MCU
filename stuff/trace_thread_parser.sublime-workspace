@@ -1,0 +1,273 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"f",
+				"Fprintf\tn int, err error ƒ"
+			],
+			[
+				"a",
+				"arraystring\t[]string ν"
+			],
+			[
+				"ar",
+				"array\t[]int ν"
+			],
+			[
+				"fucn",
+				"func main\tfunc main {...} ʂ"
+			],
+			[
+				"p",
+				"Print\tn int, err error ƒ"
+			],
+			[
+				"read",
+				"ReadString\tstring, error ƒ"
+			],
+			[
+				"re",
+				"result\tstring ν"
+			],
+			[
+				"st",
+				"Stdin\t*os.File ν"
+			],
+			[
+				"r",
+				"ReadString\tstring, error ƒ"
+			],
+			[
+				"trims",
+				"TrimSuffix\tstring ƒ"
+			],
+			[
+				"t",
+				"text\tstring ν"
+			],
+			[
+				"P",
+				"ParseInt\ti int64, err error ƒ"
+			],
+			[
+				"im",
+				"import\timport (...) ʂ"
+			],
+			[
+				"i",
+				"import\timport (...) ʂ"
+			],
+			[
+				"fun",
+				"func main\tfunc main {...} ʂ"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "syn",
+		"selected_items":
+		[
+			[
+				"syn",
+				"Set Syntax: Go"
+			],
+			[
+				"",
+				"Set Syntax: Go"
+			],
+			[
+				"a",
+				"Package Control: Discover Packages"
+			],
+			[
+				"Snippet: ",
+				"Snippet: #!/usr/bin/env"
+			],
+			[
+				"goim",
+				"GoImports"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 485.0
+	},
+	"console":
+	{
+		"height": 139.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by) "
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/mypc/go/src/go_practice/bubblesort/bubblesort.go",
+		"/home/mypc/go/src/go_practice/network/network.go",
+		"/home/mypc/go/src/go_practice/fizzbuzz/fizzbuzz.go",
+		"/home/mypc/go/src/go_practice/reverse/reverse.go",
+		"/home/mypc/go/src/reverse/reverse.go",
+		"/home/mypc/go/src/practice/fibonacci.go",
+		"/home/mypc/go/src/practice/reverse.go",
+		"/home/mypc/go/src/fibonacci/fibonacci.go",
+		"/home/mypc/go/src/Practice/fibonacci.go",
+		"/home/mypc/go/src/golang.org/x/tools/godoc/static/playground.js",
+		"/home/mypc/.config/sublime-text-3/Packages/Package Control/Package Control.sublime-settings",
+		"/home/mypc/.config/sublime-text-3/Packages/User/Package Control.sublime-settings",
+		"/home/mypc/go/src/rot13/main.go",
+		"/home/mypc/go/src/github.com/xxlionhearxxx/hello/hello.go",
+		"/home/mypc/go/src/Fibonacci.go",
+		"/home/mypc/go/src/rot13/rot13",
+		"/home/mypc/.config/sublime-text-3/Packages/GoSublime/CHANGELOG.md",
+		"/home/mypc/.config/sublime-text-3/Packages/GoSublime/USAGE.md",
+		"/home/mypc/.config/sublime-text-3/Packages/User/GoSublime.sublime-settings"
+	],
+	"find":
+	{
+		"height": 0.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "trace_thread_parser.sublime-project",
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 247.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

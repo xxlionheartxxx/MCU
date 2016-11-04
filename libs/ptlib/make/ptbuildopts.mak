@@ -11,7 +11,7 @@ endif
 
 MACHTYPE   = x86_64
 OSTYPE	   = linux
-OSRELEASE  = "3.13.0-46-generic"
+OSRELEASE  = "3.13.0-96-generic"
 
 STDCCFLAGS    +=  -D_REENTRANT -fno-exceptions 
 STDCXXFLAGS   +=  
